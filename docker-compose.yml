@@ -1,0 +1,34 @@
+version: '3'
+services:
+  web:
+    image: jboss/wildfly:12.0.0.Final
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+      - "9990:9990"
+    volumes:
+      - ./war/:/opt/jboss/wildfly/standalone/deployments/
+      - ./jboss/dev/mgmt-users.properties:/opt/jboss/wildfly/standalone/configuration/mgmt-users.properties
+      # - ./bookshelf.properties:/opt/jboss/wildfly/standalone/deployments/configuration/bookshelf.properties
+    depends_on:
+      - db
+    command:
+      - /opt/jboss/wildfly/bin/standalone.sh
+      - -b
+      - "0.0.0.0"
+      - -bmanagement
+      - '0.0.0.0'
+    environment:
+      SQL_INSTANCE_NAME: db
+      SQL_DB_NAME: bsdb
+      SQL_USERNAME: bsuser
+      SQL_PASSWORD: bspass
+  db:
+    image: mariadb:10.3.6
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: bsdb
+      MYSQL_USER: bsuser
+      MYSQL_PASSWORD: bspass
