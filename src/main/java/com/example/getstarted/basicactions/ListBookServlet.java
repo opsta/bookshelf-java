@@ -19,6 +19,7 @@ import com.example.getstarted.daos.BookDao;
 import com.example.getstarted.daos.CloudSqlDao;
 import com.example.getstarted.objects.Book;
 import com.example.getstarted.objects.Result;
+import com.example.getstarted.objects.ConfigLoader;
 import com.example.getstarted.util.CloudStorageHelper;
 
 import com.google.common.base.Strings;
@@ -30,6 +31,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -44,14 +46,7 @@ import javax.servlet.http.HttpServletResponse;
 public class ListBookServlet extends HttpServlet {
 
   private static final Logger logger = Logger.getLogger(ListBookServlet.class.getName());
-
-  // [START config]
-  private String storageType = StringUtils.defaultIfEmpty(System.getenv("STORAGE_TYPE"), "sql");
-  private String sqlInstanceName = StringUtils.defaultIfEmpty(System.getenv("SQL_INSTANCE_NAME"), "localhost");
-  private String sqlDbName = StringUtils.defaultIfEmpty(System.getenv("SQL_DB_NAME"), "bookshelf");
-  private String sqlUsername = StringUtils.defaultIfEmpty(System.getenv("SQL_USERNAME"), "root");
-  private String sqlPassword = StringUtils.defaultIfEmpty(System.getenv("SQL_PASSWORD"), "rootpass");
-  // [END config]
+  Properties props = ConfigLoader.getInstance().getConfig();
 
   @Override
   public void init() throws ServletException {
@@ -59,12 +54,10 @@ public class ListBookServlet extends HttpServlet {
     CloudStorageHelper storageHelper = new CloudStorageHelper();
 
     // Creates the DAO based on the Context Parameters
-    switch (storageType) {
+    switch (props.getProperty("storageType")) {
       case "sql":
         try {
-          String connect = "jdbc:mysql://" + sqlInstanceName + "/" + sqlDbName + 
-            "?user=" + sqlUsername + "&password=" + sqlPassword + "&useSSL=false";
-          dao = new CloudSqlDao(connect);
+          dao = new CloudSqlDao(props.getProperty("sqlConnect"));
         } catch (SQLException e) {
           throw new ServletException("SQL error", e);
         }
