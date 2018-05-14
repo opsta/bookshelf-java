@@ -19,12 +19,10 @@ import com.example.getstarted.daos.BookDao;
 import com.example.getstarted.daos.CloudSqlDao;
 import com.example.getstarted.objects.Book;
 import com.example.getstarted.objects.Result;
-import com.example.getstarted.objects.ConfigLoader;
+import com.example.getstarted.util.ConfigLoader;
 import com.example.getstarted.util.CloudStorageHelper;
 
 import com.google.common.base.Strings;
-
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.sql.SQLException;
